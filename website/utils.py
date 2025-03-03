@@ -3,6 +3,7 @@ import cv2
 import fitz
 import numpy as np
 from PIL import Image
+from django.conf import settings
 
 def preprocess_image(image):
     # Convert to grayscale
@@ -132,3 +133,71 @@ def extract_alphabets(pdf_path, output_folder, aspect_ratio_threshold=3):
         alphabet_image.save(os.path.join(output_folder, filename))
     
     return coordinates, row_mapping
+
+def extract_rows(pdf_path, row_mapping, output_folder, padding=10):
+    """
+    Extract rows from the PDF as images using row_mapping.
+    """
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    pdf_document = fitz.open(pdf_path)
+    row_images = []
+
+    # Sort row_mapping by lower_limit to ensure proper order
+    row_mapping = sorted(row_mapping, key=lambda x: x[1])
+
+    for page_num in range(len(pdf_document)):
+        page = pdf_document.load_page(page_num)
+        page_image = page.get_pixmap()
+        np_page_image = np.frombuffer(page_image.samples, dtype=np.uint8).reshape((page_image.height, page_image.width, page_image.n))
+
+        for i, (row_num, lower_limit, upper_limit) in enumerate(row_mapping):
+            # Calculate the height of the row
+            row_height = upper_limit - lower_limit
+
+            # Calculate the ending y coordinate
+            end_y = lower_limit + 2 * row_height
+
+            # Ensure the end_y does not exceed the image height
+            end_y = min(end_y, np_page_image.shape[0])
+
+            # Check if the next row exists and adjust end_y to avoid overlap
+            if i < len(row_mapping) - 1:
+                next_lower_limit = row_mapping[i + 1][1]
+                next_upper_limit = row_mapping[i + 1][2]
+                if end_y > next_lower_limit and next_upper_limit - next_lower_limit > 1:
+                    end_y = next_lower_limit
+
+            # Skip if the row is empty or invalid
+            if lower_limit >= end_y:
+                print(f"Skipping empty row {row_num}: lower_limit ({lower_limit}) >= end_y ({end_y})")
+                continue
+
+            # Extract the row from the page image
+            row_image = np_page_image[lower_limit:end_y, :]
+
+            # Convert RGB to grayscale if necessary
+            if len(row_image.shape) == 3:  # If RGB, convert to grayscale
+                row_image = cv2.cvtColor(row_image, cv2.COLOR_RGB2GRAY)
+
+            # Ensure the image is 2D (grayscale)
+            if len(row_image.shape) != 2:
+                raise ValueError(f"Unexpected image shape: {row_image.shape}")
+
+            # Add padding to the row image
+            padded_row_image = np.pad(row_image, ((padding, padding), (0, 0)), mode='constant', constant_values=255)
+
+            # Convert to PIL image
+            pil_row_image = Image.fromarray(padded_row_image)
+
+            # Save the row image
+            row_image_filename = f"row_{row_num}.png"
+            row_image_path = os.path.join(output_folder, row_image_filename)
+            pil_row_image.save(row_image_path)
+
+            # Store the relative path for the template
+            relative_path = os.path.relpath(row_image_path, settings.MEDIA_ROOT)
+            row_images.append((row_num, relative_path))
+
+    return row_images

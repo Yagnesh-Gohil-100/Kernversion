@@ -1,37 +1,118 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Upload Successful - Kernversion{% endblock %}
+{% block title %}Edit Rows - Kernversion{% endblock %}
 
 {% block content %}
+<div class="container-fluid my-5">
+    <h1 class="text-center mb-4">Edit Rows</h1>
+    <p class="text-center lead">Please classify each row below to proceed with the conversion.</p>
 
-<!-- Header -->
-<header class="py-5" style="background: linear-gradient(to right, #3f77da, #a4c7e2); color: #fff;">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="text-center">
-            <h1 class="display-4 fw-bold">Upload Successful</h1>
-            <p class="lead fw-normal text-light mb-0">Your PDF has been uploaded successfully.</p>
+    <div class="row">
+        <!-- Left Side: Row Numbers, Sections, and Row Images -->
+        <div class="col-md-8">
+            <div class="row-editor p-4" style="background-color: #e3f2fd; border-radius: 10px;">
+                {% for row_num, row_image_url in row_images %}
+                    <div class="row-item mb-4">
+                        <div class="row align-items-center">
+                            <!-- Row Number -->
+                            <div class="col-auto">
+                                <h4 class="mb-0">Row {{ row_num }}</h4>
+                            </div>
+
+                             <!-- Horizontal Dotted Line -->
+                            <div class="col-auto">
+                                <div style="border-top: 2px dotted #0d6efd; width: 15px;"></div>
+                            </div> 
+
+                            <!-- Section Dropdown -->
+                            <div class="col-auto">
+                                <select name="row_{{ row_num }}_type" class="form-select">
+                                    <option value="articulation">Articulation</option>
+                                    <option value="kann_swar">Kann Swar</option>
+                                    <option value="swar">Swar</option>
+                                    <option value="text">Text</option>
+                                </select>
+                            </div>
+
+                            <!-- Horizontal Dotted Line -->
+                            <div class="col-auto">
+                                <div style="border-top: 2px dotted #0d6efd; width: 30px;"></div>
+                            </div>
+
+                            <!-- Row Image -->
+                            <div class="col">
+                                <img src="{{ row_image_url }}" alt="Row {{ row_num }}" class="img-fluid row-image" style="max-height: 100px;">
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Save Button -->
+            <div class="text-center mt-5">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save me-2"></i>Save and Proceed
+                </button>
+            </div>
         </div>
-    </div>
-</header>
 
-<!-- Main Content -->
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 text-center">
-            <div class="card border-2 shadow-sm p-4" style="border-style: dashed; border-color: #3f77da;">
-                <div class="card-body">
-                    <i class="fas fa-check-circle fa-4x mb-4 text-success"></i>
-                    <h3 class="card-title mb-4">What's Next?</h3>
-                    <p class="card-text mb-4">
-                        Your PDF is being processed. You will be able to view and edit the segmented data shortly.
-                    </p>
-                    <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-home me-2"></i> Return to Home
-                    </a>
-                </div>
+        <!-- Right Side: Original PDF as Images -->
+        <div class="col-md-4">
+            <div class="pdf-viewer">
+                <div class="vertical-line"></div>
+                {% for pdf_image in pdf_images %}
+                    <img src="{{ MEDIA_URL }}{{ pdf_image }}" class="img-fluid mb-3" alt="PDF Page {{ forloop.counter }}">
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_css %}
+<style>
+    .row-editor {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    .row-item {
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 15px;
+    }
+    .row-item:last-child {
+        border-bottom: none;
+    }
+    .row-image {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        max-height: 100px; /* Adjust based on your needs */
+        width: auto;
+    }
+    .form-select {
+        width: 200px; /* Fixed width for dropdown */
+    }
+    .pdf-viewer {
+        position: relative;
+    }
+    .vertical-line {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #0d6efd;
+    }
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        padding: 10px 30px;
+        font-size: 1.1rem;
+    }
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0b5ed7;
+    }
+</style>
 {% endblock %}
