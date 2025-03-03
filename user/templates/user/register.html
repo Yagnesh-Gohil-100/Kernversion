@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Kernversion{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+    <!-- If the user is already logged in, redirect or show a message -->
+    <div class="container my-5">
+        <div class="alert alert-info">
+            You are already logged in. <a href="{% url 'home' %}">Go to Home</a>
+        </div>
+    </div>
+{% else %}
+
+<!-- Header -->
+<header class="py-5" style="background: linear-gradient(to right, #3f77da, #a4c7e2); color: #fff;">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold">Welcome to Kernversion</h1>
+            <p class="lead fw-normal text-light mb-0">Convert music compositions from PDF to Kern format with ease.</p>
+        </div>
+    </div>
+</header>
+
+<!-- Registration Form Section -->
+<div class="container d-flex justify-content-center align-items-center mt-5" style="min-height: 60vh;">
+    <div class="row w-100">
+        <div class="col-lg-4 col-md-6 col-sm-8 col-10 mx-auto">
+            <div class="card border-1 rounded shadow-sm" style="max-width: 100%; margin: auto;">
+                <div class="card-header bg-secondary text-white text-center">
+                    <h2 class="fw-bold">Register</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{% url 'register' %}">
+                        {% csrf_token %}
+                        
+                        {{ form.as_p }}
+
+                        <div class="d-grid">
+                            <button 
+                                type="submit" 
+                                class="btn" 
+                                style="background-color: #3f77da; 
+                                color: white; 
+                                border: none; 
+                                padding: 8px 15px; 
+                                font-size: 14px; 
+                                border-radius: 25px; 
+                                cursor: pointer; 
+                                transition: background-color 0.3s ease;" 
+                                onmouseover="this.style.backgroundColor='rgb(46, 97, 184)'" 
+                                onmouseout="this.style.backgroundColor='#3f77da'">
+                                Register
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="container">
+                    <div class="text-start mx-3">
+                        <p>By continuing, you agree to Kernversion's <a href="#" class="text-primary">Terms of Use</a> and <a href="#" class="text-primary">Privacy Policy</a>.</p>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px; padding: 20px;">
+                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <div style="flex: 1; height: 1px; background-color: #ccc;"></div>
+                    <p style="font-size: 16px; font-weight: bold; margin: 0 10px; color: #555;">Already have an account?</p>
+                    <div style="flex: 1; height: 1px; background-color: #ccc;"></div>
+                </div>
+                <!-- Login Button -->
+                <a 
+                href="{% url 'login' %}" 
+                style="display: inline-block; 
+                width: 100%; 
+                max-width: 400px; 
+                border: 1px solid #ccc; 
+                border-radius: 25px; 
+                color: #555; 
+                font-size: 12px; 
+                padding: 5px; 
+                text-decoration: none; 
+                text-align: center; 
+                cursor: pointer; 
+                transition: background-color 0.3s ease, border-color 0.3s ease;"
+                onmouseover="this.style.backgroundColor='#f5f5f5'; this.style.borderColor='#888'" 
+                onmouseout="this.style.backgroundColor='transparent'; this.style.borderColor='#ccc'">
+                Login to your account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

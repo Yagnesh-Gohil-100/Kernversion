@@ -1,14 +1,99 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
-    <h1>Welcome to Kernversion!</h1>
-    <p>This is the home page.</p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Home - Kernversion{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<header class="py-5" style="background: linear-gradient(to right, #3f77da, #a4c7e2); color: #fff;">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold">Welcome to Kernversion</h1>
+            <p class="lead fw-normal text-light mb-0">Convert music compositions from PDF to Kern format with ease.</p>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            {% if user.is_authenticated %}
+                <!-- Content for logged-in users -->
+                <h2 class="mb-4">Ready to Convert Your Music?</h2>
+                <div class="card border-2 shadow-sm p-4" style="border-style: dashed; border-color: #3f77da;">
+                    <div class="card-body">
+                        <!-- PDF Icon -->
+                        <i class="fas fa-file-pdf fa-4x mb-4 text-primary"></i>
+                        <h3 class="card-title mb-4">Kernversion</h3>
+                        <p class="card-text mb-4">
+                            Upload your music composition and let Kernversion do the rest. Our advanced algorithms ensure accurate segmentation and conversion, saving you time and effort.
+                        </p>
+                        <!-- Upload Form -->
+                        <form method="post" enctype="multipart/form-data" action="{% url 'process_pdf' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <input type="file" class="form-control" name="pdf" accept="application/pdf" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-upload me-2"></i> Upload PDF
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Content for non-logged-in users -->
+                <h2 class="mb-4">Why Choose Kernversion?</h2>
+                <p class="lead mb-4">
+                    Kernversion is your ultimate tool for converting music compositions written in Bhatkhande notation (Devanagari) into machine-readable Kern format. Whether you're a musician, researcher, or educator, Kernversion simplifies the process of digitizing and analyzing music.
+                </p>
+                <div class="card border-2 shadow-sm p-4" style="border-style: dashed; border-color: #3f77da;">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Get Started</h3>
+                        <p class="card-text mb-4">
+                            Upload your PDF music composition and let Kernversion do the rest. Our advanced algorithms ensure accurate segmentation and conversion, saving you time and effort.
+                        </p>
+                        <p class="mb-4">Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to upload a PDF.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-music fa-3x mb-3 text-primary"></i>
+                        <h4 class="card-title">Accurate Conversion</h4>
+                        <p class="card-text">Our algorithms ensure precise segmentation and conversion of music notations.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-clock fa-3x mb-3 text-primary"></i>
+                        <h4 class="card-title">Save Time</h4>
+                        <p class="card-text">Automate the tedious process of manual transcription and focus on your music.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                        <h4 class="card-title">User-Friendly</h4>
+                        <p class="card-text">Designed for musicians of all levels, Kernversion is easy to use and intuitive.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
